@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ফল ধরো গেম</title>
+    <style>
+        /* CSS: গেমের স্টাইল */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #87CEEB;
+            font-family: Arial, sans-serif;
+        }
+        #game-container {
+            position: relative;
+            width: 800px;
+            height: 500px;
+            border: 2px solid #000;
+            background-color: #fff;
+            overflow: hidden;
+        }
+        #basket {
+            position: absolute;
+            bottom: 10px;
+            width: 100px;
+            height: 50px;
+            background: url('https://img.icons8.com/color/48/000000/basket.png') no-repeat center;
+            background-size: contain;
+        }
+        .fruit {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: url('https://img.icons8.com/color/48/000000/apple.png') no-repeat center;
+            background-size: contain;
+        }
+        #score, #lives {
+            position: absolute;
+            top: 10px;
+            font-size: 24px;
+            color: #000;
+        }
+        #score { left: 10px; }
+        #lives { right: 10px; }
+        #game-over {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 36px;
+            color: red;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <div id="score">স্কোর: 0</div>
+        <div id="lives">লাইফ: 3</div>
+        <div id="basket"></div>
+        <div id="game-over">গেম ওভার! আবার খেলতে রিফ্রেশ করো!</div>
+    </div>
+
+    <script>
+        // JavaScript: গেমের লজিক
+        const gameContainer = document.getElementById('game-container');
+        const basket = document.getElementById('basket');
+        const scoreDisplay = document.getElementById('score');
+        const livesDisplay = document.getElementById('lives');
+        const gameOverDisplay = document.getElementById('game-over');
+
+        let score = 0;
+        let lives = 3;
+        let basketX = 350; // ঝুড়ির শুরুর পজিশন
+        let gameOver = false;
+
+        // মাউস দিয়ে ঝুড়ি নিয়ন্ত্রণ
+        document.addEventListener('mousemove', (e) => {
+            if (!gameOver) {
+                const containerRect = gameContainer.getBoundingClientRect();
+                basketX = e.clientX - containerRect.left - 50; // ঝুড়ির অর্ধেক সাইজ
+                if (basketX < 0) basketX = 0;
+                if (basketX > 700) basketX = 700; // কন্টেইনারের সীমা
+                basket.style.left = basketX + 'px';
+            }
+        });
+
+        // ফল তৈরি করা
+        function createFruit() {
+            if (gameOver) return;
+            const fruit = document.createElement('div');
+            fruit.classList.add('fruit');
+            fruit.style.left = Math.random() * (800 - 40) + 'px'; // র‍্যান্ডম X পজিশন
+            fruit.style.top = '0px';
+            gameContainer.appendChild(fruit);
+
+            // ফলের পতন
+            let fruitY = 0;
+            const fall = setInterval(() => {
+                if (gameOver) {
+                    clearInterval(fall);
+                    return;
+                }
+                fruitY += 5; // ফলের গতি
+                fruit.style.top = fruitY + 'px';
+
+                // ঝুড়ির সাথে কলিশন চেক
+                const basketRect = basket.getBoundingClientRect();
+                const fruitRect = fruit.getBoundingClientRect();
+                if (
+                    fruitRect.bottom > basketRect.top &&
+                    fruitRect.top < basketRect.bottom &&
+                    fruitRect.right > basketRect.left &&
+                    fruitRect.left < basketRect.right
+                ) {
+                    score += 10;
+                    scoreDisplay.textContent = `স্কোর: ${score}`;
+                    fruit.remove();
+                    clearInterval(fall);
+                }
+
+                // ফল মিস হলে
+                if (fruitY > 500) {
+                    lives -= 1;
+                    livesDisplay.textContent = `লাইফ: ${lives}`;
+                    fruit.remove();
+                    clearInterval(fall);
+                    if (lives <= 0) {
+                        gameOver = true;
+                        gameOverDisplay.style.display = 'block';
+                    }
+                }
+            }, 20);
+        }
+
+        // প্রতি ১.৫ সেকেন্ডে নতুন ফল
+        setInterval(createFruit, 1500);
+
+        // গেম শুরু
+        basket.style.left = basketX + 'px';
+    </script>
+</body>
+</html>
