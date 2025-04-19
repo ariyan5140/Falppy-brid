@@ -1,147 +1,137 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ফল ধরো গেম</title>
+    <title>Premium Bio Link</title>
     <style>
-        /* CSS: গেমের স্টাইল */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
         body {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #87CEEB;
-            font-family: Arial, sans-serif;
+            padding: 20px;
         }
-        #game-container {
-            position: relative;
-            width: 800px;
-            height: 500px;
-            border: 2px solid #000;
-            background-color: #fff;
-            overflow: hidden;
+
+        .container {
+            max-width: 500px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            animation: fadeIn 1s ease-in-out;
         }
-        #basket {
-            position: absolute;
-            bottom: 10px;
-            width: 100px;
-            height: 50px;
-            background: url('https://img.icons8.com/color/48/000000/basket.png') no-repeat center;
-            background-size: contain;
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-        .fruit {
-            position: absolute;
-            width: 40px;
-            height: 40px;
-            background: url('https://img.icons8.com/color/48/000000/apple.png') no-repeat center;
-            background-size: contain;
+
+        .profile-img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            margin-bottom: 20px;
+            border: 4px solid #764ba2;
         }
-        #score, #lives {
-            position: absolute;
-            top: 10px;
+
+        h1 {
             font-size: 24px;
-            color: #000;
+            color: #333;
+            margin-bottom: 10px;
         }
-        #score { left: 10px; }
-        #lives { right: 10px; }
-        #game-over {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 36px;
-            color: red;
-            display: none;
+
+        p {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .link-btn {
+            display: block;
+            text-decoration: none;
+            background: #667eea;
+            color: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .link-btn:hover {
+            background: #764ba2;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .social-icons {
+            margin-top: 20px;
+        }
+
+        .social-icons a {
+            text-decoration: none;
+            color: #333;
+            font-size: 24px;
+            margin: 0 10px;
+            transition: color 0.3s ease;
+        }
+
+        .social-icons a:hover {
+            color: #764ba2;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 20px;
+            }
+
+            p {
+                font-size: 14px;
+            }
+
+            .link-btn {
+                font-size: 14px;
+                padding: 12px;
+            }
         }
     </style>
 </head>
 <body>
-    <div id="game-container">
-        <div id="score">স্কোর: 0</div>
-        <div id="lives">লাইফ: 3</div>
-        <div id="basket"></div>
-        <div id="game-over">গেম ওভার! আবার খেলতে রিফ্রেশ করো!</div>
+    <div class="container">
+        <img src="https://via.placeholder.com/120" alt="Profile Picture" class="profile-img">
+        <h1>Your Name</h1>
+        <p>Content Creator | Entrepreneur | Dreamer</p>
+        
+        <a href="https://yourwebsite.com" class="link-btn">Visit My Website</a>
+        <a href="https://youtube.com" class="link-btn">Watch My YouTube</a>
+        <a href="https://instagram.com" class="link-btn">Follow on Instagram</a>
+        <a href="https://shop.com" class="link-btn">Shop My Products</a>
+        
+        <div class="social-icons">
+            <a href="https://facebook.com"><i class="fab fa-facebook"></i></a>
+            <a href="https://twitter.com"><i class="fab fa-twitter"></i></a>
+            <a href="https://instagram.com"><i class="fab fa-instagram"></i></a>
+            <a href="https://linkedin.com"><i class="fab fa-linkedin"></i></a>
+        </div>
     </div>
 
-    <script>
-        // JavaScript: গেমের লজিক
-        const gameContainer = document.getElementById('game-container');
-        const basket = document.getElementById('basket');
-        const scoreDisplay = document.getElementById('score');
-        const livesDisplay = document.getElementById('lives');
-        const gameOverDisplay = document.getElementById('game-over');
-
-        let score = 0;
-        let lives = 3;
-        let basketX = 350; // ঝুড়ির শুরুর পজিশন
-        let gameOver = false;
-
-        // মাউস দিয়ে ঝুড়ি নিয়ন্ত্রণ
-        document.addEventListener('mousemove', (e) => {
-            if (!gameOver) {
-                const containerRect = gameContainer.getBoundingClientRect();
-                basketX = e.clientX - containerRect.left - 50; // ঝুড়ির অর্ধেক সাইজ
-                if (basketX < 0) basketX = 0;
-                if (basketX > 700) basketX = 700; // কন্টেইনারের সীমা
-                basket.style.left = basketX + 'px';
-            }
-        });
-
-        // ফল তৈরি করা
-        function createFruit() {
-            if (gameOver) return;
-            const fruit = document.createElement('div');
-            fruit.classList.add('fruit');
-            fruit.style.left = Math.random() * (800 - 40) + 'px'; // র‍্যান্ডম X পজিশন
-            fruit.style.top = '0px';
-            gameContainer.appendChild(fruit);
-
-            // ফলের পতন
-            let fruitY = 0;
-            const fall = setInterval(() => {
-                if (gameOver) {
-                    clearInterval(fall);
-                    return;
-                }
-                fruitY += 5; // ফলের গতি
-                fruit.style.top = fruitY + 'px';
-
-                // ঝুড়ির সাথে কলিশন চেক
-                const basketRect = basket.getBoundingClientRect();
-                const fruitRect = fruit.getBoundingClientRect();
-                if (
-                    fruitRect.bottom > basketRect.top &&
-                    fruitRect.top < basketRect.bottom &&
-                    fruitRect.right > basketRect.left &&
-                    fruitRect.left < basketRect.right
-                ) {
-                    score += 10;
-                    scoreDisplay.textContent = `স্কোর: ${score}`;
-                    fruit.remove();
-                    clearInterval(fall);
-                }
-
-                // ফল মিস হলে
-                if (fruitY > 500) {
-                    lives -= 1;
-                    livesDisplay.textContent = `লাইফ: ${lives}`;
-                    fruit.remove();
-                    clearInterval(fall);
-                    if (lives <= 0) {
-                        gameOver = true;
-                        gameOverDisplay.style.display = 'block';
-                    }
-                }
-            }, 20);
-        }
-
-        // প্রতি ১.৫ সেকেন্ডে নতুন ফল
-        setInterval(createFruit, 1500);
-
-        // গেম শুরু
-        basket.style.left = basketX + 'px';
-    </script>
+    <!-- Font Awesome for Icons -->
+    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
 </body>
 </html>
